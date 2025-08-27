@@ -1,0 +1,667 @@
+openapi: '3.0.1'
+info:
+  title: Test Agent
+  description: |
+    The Kafka communication layer definitions for `SVT Test Agent Service for Ancillary ASIC tests`. 
+    
+    Main topics Test Agent uses will be
+      1. svt.test-agent.request
+      2. svt.test-agent.request.reply
+    
+    
+    ### Chip Tests
+    - SLDO
+      - PowerRamp up
+      - PSRR
+      - RampRate
+      - ...
+      - ...
+      - ...
+    - NVG
+    - AncBrain
+    - Chip x
+    - Chip y
+    
+    ### Request path
+    - User input run test   
+      - TestConfig
+      - TestInput
+    - TestAgent
+      1. Read message(Coded)
+      2. Write the config values to the db-agent topic(Not Coded yet)
+      3. Run the test(Coded- dummy)
+      4. Write the results to the db-agent topic(Not Coded yet)
+      5. Reply the results to the test-Agent topic(Coded- dummy)
+      
+      
+    ### Questions
+    
+    - Should the test system controls be given to the UI? 
+    
+    
+    ### TODO
+    
+    - Dummy run test command to check the whole system and instrument before running tests
+    - 
+
+  version: 0.0.1
+paths:
+  /svt.test-agent.request/GetAllTests:
+    post:
+      tags:
+        - Testing 
+      summary: Get All Tests lists
+      description: Returns list of Tests Test Agent is allowed in the reply message. Optional filter by chip Ids can be applied to return exact set of Tests for a specific chip.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/RequestMessage'
+                - $ref: '#/components/schemas/GetAllTestsMessage'
+
+        required: true
+      responses:
+        '200':
+          description: Reply Message
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ReplyMessage'
+                  - $ref: '#/components/schemas/GetAllTestsReplyMessage'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyMessage"
+                
+  /svt.test-agent.request/RunTest:
+    post:
+      tags:
+        - Testing
+      summary: Run a test
+      description: Pass the test configration and input parameters to get results as a return
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/RequestMessage'
+                - $ref: '#/components/schemas/RunTestMessage'
+
+        required: true
+      responses:
+        '200':
+          description: Reply Message
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ReplyMessage'
+                  - $ref: '#/components/schemas/RunTestsReplyMessage'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyMessage"
+                
+  /svt.test-agent.request/AbortTests:
+    post:
+      tags:
+        - Testing 
+      summary: Abort test
+      description: Stop a running test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/RequestMessage'
+                - $ref: '#/components/schemas/AbortTestMessage'
+
+        required: true
+      responses:
+        '200':
+          description: Reply Message
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ReplyMessage'
+                  - $ref: '#/components/schemas/AbortTestReplyMessage'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyMessage"
+                
+  /svt.test-agent.request/TestStatus:
+    post:
+      tags:
+        - Testing 
+      summary: Test Status
+      description: Status of a running test
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/RequestMessage'
+                - $ref: '#/components/schemas/TestStatusMessage'
+
+        required: true
+      responses:
+        '200':
+          description: Reply Message
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ReplyMessage'
+                  - $ref: '#/components/schemas/TestStatusReplyMessage'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyMessage"
+                
+  /svt.test-agent.request/RunLoopTest:
+    post:
+      tags:
+        - Testing Sequence
+      summary: Test iterations
+      description: Pass number of test iterations with configrations and input parameters to get results sequence as a return
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/RequestMessage'
+                - $ref: '#/components/schemas/RunLoopTestMessage'
+
+        required: true
+      responses:
+        '200':
+          description: Reply Message
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ReplyMessage'
+                  - $ref: '#/components/schemas/RunLoopTestReplyMessage'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyMessage"
+                
+  /svt.test-agent.request/RunTestPlan:
+    post:
+      tags:
+        - Testing Sequence
+      summary: Test Plan
+      description: Pass a test plan with configrations and input parameters to get results as a return
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              allOf:
+                - $ref: '#/components/schemas/RequestMessage'
+                - $ref: '#/components/schemas/RunTestPlanMessage'
+
+        required: true
+      responses:
+        '200':
+          description: Reply Message
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ReplyMessage'
+                  - $ref: '#/components/schemas/RunTestPlanReplyMessage'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplyMessage"
+                
+components:
+  schemas:
+    RequestMessage:
+      type: object
+      required:
+        - command
+      properties:
+        command:
+          type: string
+        data:
+          type: object
+    ReplyMessage:
+      type: object
+      required:
+        - status
+        - type
+      properties:
+        status:
+          $ref: "#/components/schemas/ReplyStatus"
+        type:
+          type: string
+        data:
+          type: object
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            code:
+              type: number
+            message:
+              type: string
+    ReplyStatus:
+      type: string
+      enum:
+        - Success
+        - BadRequest
+        - NotFound
+        - UnexpectedError
+    #
+    # Testing :: LIST
+    #
+    GetAllTestsMessage:
+      properties:
+        command:
+          type: string
+          default: 'GetAllTests'
+        data:
+          type: object
+          properties:
+            filter:
+              type: object
+              properties:
+                chipId:
+                  type: array
+                  description: Chip id array. If filter array is empty / undefined => all Test lists will be returned.
+                  items:
+                    type: number
+    GetAllTestsReplyMessage:
+      properties:
+        type:
+          type: string
+          default: 'GetAllTestsReply'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/TestList'
+    #
+    # Testing :: RUN
+    #
+    RunTestMessage:
+      type: object
+      properties:
+        command:
+          type: string
+          default: "RunTest"
+        data:
+          type: object
+          properties:
+            chipId:
+              type: number
+            testId:
+              type: number
+            testSetupId:
+              type: number
+            configId:
+              type: number
+            params:
+              $ref: '#/components/schemas/RunTestParam'
+              
+      required:
+        - command
+        - data
+    RunTestsReplyMessage:
+      properties:
+        type:
+          type: string
+          default: 'RunTestReply'
+        data:
+          $ref: '#/components/schemas/RunTestResults'
+    
+    #
+    # Testing :: ABORT
+    #
+    AbortTestMessage:
+      properties:
+        command:
+          type: string
+          default: ' AbortTest'
+        data:
+          type: object
+          properties:
+            filter:
+              type: object
+              properties:
+                testId:
+                  type: array
+                  description: test id. If filter is empty / undefined => the running test will be stopped.
+                  items:
+                    type: number
+    AbortTestReplyMessage:
+      properties:
+        type:
+          type: string
+          default: ' AbortTestReply'
+        data:
+          $ref: "#/components/schemas/AbortTestResults"
+    #
+    # Testing :: STATUS
+    #    
+    TestStatusMessage:
+      properties:
+        command:
+          type: string
+          default: 'TestStatus'
+        data:
+          type: object
+          properties:
+            filter:
+              type: object
+              properties:
+                testId:
+                  type: number
+                chipId:
+                  type: number
+    TestStatusReplyMessage:
+      properties:
+        type:
+          type: string
+          default: 'TestStatusReply'
+        data:
+          $ref: "#/components/schemas/TestStatusResult"
+    #
+    # Testing Sequence :: LOOP
+    #
+    RunLoopTestMessage:
+      type: object
+      properties:
+        command:
+          type: string
+          default: "RunLoopTest"
+        data:
+          type: object
+          properties:
+            noOfIterations:
+              type: number
+            testIds:
+              type: array
+              items:
+                type: number
+            chipId:
+              type: number
+            testSetupId:
+              type: number
+            configId:
+              type: number
+            params:
+              $ref: '#/components/schemas/RunTestParam'
+              
+      required:
+        - command
+        - data
+    RunLoopTestReplyMessage:
+      properties:
+        type:
+          type: string
+          default: 'RunLoopTestReply'
+        data:
+          $ref: '#/components/schemas/RunLoopTestResults'
+    
+    #
+    # Testing Sequence :: PLNA
+    #
+    RunTestPlanMessage:
+      type: object
+      properties:
+        command:
+          type: string
+          default: "RunTestPlan"
+        data:
+          type: object
+          properties:
+            testIds:
+              type: array
+              items:
+                type: number
+            chipId:
+              type: number
+            testSetupId:
+              type: number
+            configId:
+              type: array
+              items:
+                type: number
+            params:
+              type: array
+              items:
+                $ref: '#/components/schemas/RunTestParam'
+              
+      required:
+        - command
+        - data
+    RunTestPlanReplyMessage:
+      properties:
+        type:
+          type: string
+          default: 'RunTestPlanReply'
+        data:
+          $ref: '#/components/schemas/RunTestPlanResults'
+    
+
+    #  
+    # PARAMETERS
+    #
+    TestList:
+      type: object
+      required:
+        - chipId
+        - chipName
+        - testLists
+      properties:
+        chipId:
+          type: number
+        chipName:
+          type: string
+        testLists:
+          type: string
+      example:
+        chipId: "001"
+        chipName: "SLDO"
+        testLists: "{PowerRampUp, PSRR, RampRate, DAC}"
+    RunTestParam:
+      type: object
+      properties:
+        chipName:
+          type: string
+        testName:
+          type: string
+        TestConfiguration:
+          type: object
+          properties:
+            mode:
+              type: string
+            loadCapacitance:
+              type: string
+            loadCurrent:
+              type: string
+            temperature:
+              type: string
+        inputs:
+          type: object
+          properties:
+            vInTarget:
+              type: string
+            iInLimit:
+              type: string
+            rampRate:
+              type: string
+    RunTestResults:
+      type: object
+      properties:
+        chipName:
+          type: string
+        testName:
+          type: string
+        configId:
+          type: number
+        testValues:
+          type: object
+          properties:
+            inputs:
+              type: object
+              properties:
+                vInTarget:
+                  type: string
+                iInLimit:
+                  type: string
+                rampRate:
+                  type: string
+            outputs:
+              type: object
+              properties:
+                v_out:
+                  type: string
+    AbortTestResults:
+      type: object
+      properties:
+        chipName:
+          type: string
+        testName:
+          type: string
+        configId:
+          type: number
+        inputs:
+          type: object
+          properties:
+            vInTarget:
+              type: string
+            iInLimit:
+              type: string
+            rampRate:
+              type: string
+    TestStatusResult:
+      type: object
+      properties:
+        chipName:
+          type: string
+        testName:
+          type: string
+        testId:
+          type: number
+        chipId:
+          type: number
+        testStatus:
+          type: string
+    RunLoopTestResults:
+      type: object
+      properties:
+        chipName:
+          type: string
+        testName:
+          type: string
+        configId:
+          type: string
+        loopTestValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunLoopTestResultsArray'
+          
+    RunTestPlanResults:
+      type: object
+      properties:
+        chipName:
+          type: string
+        testNames:
+          type: array
+          items:
+            type: string
+        configIds:
+          type: array
+          items:
+            type: number
+        TestPlanValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunTestPlanResultArray'
+            
+    #
+    # ARRAYS
+    #
+    
+    RunLoopTestResultsArray:
+      type: object
+      properties:
+        iterationN0:
+          type: number
+        inputs:
+          type: object
+          properties:
+            vInTarget:
+              type: string
+            iInLimit:
+              type: string
+            rampRate:
+              type: string
+        outputs:
+          type: object
+          properties:
+            v_out:
+              type: string
+  
+    RunTestPlanResultArray:
+      type: object
+      properties:
+            sequenceNo:
+              type: number
+            inputs:
+              type: object
+              properties:
+                vInTarget:
+                  type: string
+                iInLimit:
+                  type: string
+                rampRate:
+                  type: string
+            outputs:
+              type: object
+              properties:
+                v_out:
+                  type: string
+    
+      
+    
+    
+    
+
+
+ 
